@@ -24,12 +24,14 @@ function! s:MRUSearch()  "{{{1
 	set hlsearch
 	let l:text = getline(1, '$')
 	let l:queryText = ''
+	" Make a change to start the undoable change
+	normal i<Esc>
 	while 1
 		redraw
 		echo 'search>' . l:queryText
 		let l:char = getchar()
 		if l:char == 27                 " <ESC>
-			call setline(1, l:text)
+			undojoin | call setline(1, l:text)
 			break
 		elseif l:char ==? "\<BS>"
 			let l:queryText = l:queryText[:-2]
@@ -43,8 +45,8 @@ function! s:MRUSearch()  "{{{1
 		for s:query in l:queryList
 			let l:filteredText = filter(l:filteredText, function('<SID>FilterFiles'))
 		endfor
-		normal! ggdG
-		call setline(1, l:filteredText)
+		undojoin | normal! ggdG
+		undojoin | call setline(1, l:filteredText)
 		let l:strippedQuery = substitute(l:queryText, ' $', '', '')  " strip trailing space
 		let @/ = substitute(l:strippedQuery, ' ', '\\|', 'g')
 		redraw
