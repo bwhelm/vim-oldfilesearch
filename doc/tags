@@ -1,0 +1,9 @@
+configuring-oldfilesearch	oldfilelist.txt	/*configuring-oldfilesearch*
+g:OldFileSearch_dotfiles	oldfilelist.txt	/*g:OldFileSearch_dotfiles*
+g:OldFileSearch_fugitive	oldfilelist.txt	/*g:OldFileSearch_fugitive*
+g:OldFileSearch_helpfiles	oldfilelist.txt	/*g:OldFileSearch_helpfiles*
+g:OldFileSearch_netrw	oldfilelist.txt	/*g:OldFileSearch_netrw*
+g:OldFileSearch_openMRU	oldfilelist.txt	/*g:OldFileSearch_openMRU*
+g:OldFileSearch_remotefiles	oldfilelist.txt	/*g:OldFileSearch_remotefiles*
+using-oldfilesearch	oldfilelist.txt	/*using-oldfilesearch*
+vim-oldfilesearch	oldfilelist.txt	/*vim-oldfilesearch*

@@ -54,7 +54,7 @@ function! s:MRUSearch()  "{{{1
 	redraw
 endfunction
 "}}}
-function! s:MRUList()  "{{{1
+function! oldfilesearch#MRUList()  "{{{1
 	" Creates list of most recently edited files in new window
 	if !exists('b:newFile')
 		" b:newFile should be defined via autocmd on BufNewFile, and undefined
@@ -76,10 +76,14 @@ function! s:MRUList()  "{{{1
 	0put =v:oldfiles
 	" Break undo sequence
 	execute "normal! i\<C-G>u\<Esc>"
-	" Remove help files, netrw, and fugitive files
+	" Remove netrw and fugitive files
 	silent global/\/runtime\/doc/d
-	silent global/\[BufExplorer\]/d
-	silent global/|| fugitive:\/\//d
+	if g:OldFileSearch_netrw == 1
+		silent global/\[BufExplorer\]/d
+	endif
+	if g:OldFileSearch_fugitive == 1
+		silent global/|| fugitive:\/\//d
+	endif
 	let l:text = getline(1, '$')
 	let l:count = 0
     " Reformat files (thowing out those that aren't readable)
@@ -97,12 +101,18 @@ function! s:MRUList()  "{{{1
     " Break undo sequence
 	execute "normal! i\<C-G>u\<Esc>"
     " Remove typically unwanted files
-	" dot files ...
-	"silent global/\(|| \|\/\)\./d
-	" help files ... (Note: these are covered by dot files....)
-	silent global/\S*\.txt || .*\/doc$/d
-	" remote files ...
-	silent global/|| scp:\/\//d
+	if g:OldFileSearch_dotfiles == 1
+		" dot files ...
+		silent global/\(|| \|\/\)\./d
+	endif
+	if g:OldFileSearch_helpfiles == 1
+		" help files ... (Note: these are covered by dot files....)
+		silent global/\S*\.txt || .*\/doc$/d
+	endif
+	if g:OldFileSearch_remotefiles == 1
+		" remote files ...
+		silent global/|| scp:\/\//d
+	endif
 	" blank lines ...
 	silent global/^$/d
 	normal! gg
@@ -114,6 +124,3 @@ function! s:MRUList()  "{{{1
 	nnoremap <buffer> / :call <SID>MRUSearch()<CR>
 endfunction
 "}}}
-" Open list of recent files in new buffer, ready to select
-command! Oldfiles :call <SID>MRUList()
-nnoremap <Leader>fo :Oldfiles<CR>
