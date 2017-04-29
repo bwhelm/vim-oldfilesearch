@@ -25,7 +25,7 @@ function! s:MRUSearch()  "{{{1
 	let l:text = getline(1, '$')
 	let l:queryText = ''
 	" Make a change to start the undoable change
-	normal i<Esc>
+	execute "normal! i \<BS>"
 	while 1
 		redraw
 		echo 'search>' . l:queryText
@@ -56,21 +56,39 @@ function! s:MRUSearch()  "{{{1
 	redraw
 endfunction
 "}}}
+function! s:MRUDelete()  "{{{1
+	let l:file = getline('.')
+	let [l:filename, l:filepath] = split(l:file, ' || ')
+	let l:file = fnamemodify(l:filepath . '/' . l:filename, ':~')
+	let l:file = substitute(l:file, '/', '\\/', 'g')
+	let l:file = substitute(l:file, '\~', '\\\~', 'g')
+	let l:file = substitute(l:file, '\.', '\\.', 'g')
+	" Now need to search in `~/.viminfo` or `~/.nviminfo` for relevant lines
+	" and delete them.
+	if has('nvim')
+		"split ~/.nviminfo
+		echoerr 'Not working yet'
+		return
+	else
+		split ~/.viminfo
+		execute '%s/^> ' . l:file . '\(\n[^>]*\)*//g'
+		wq
+		d
+	endif
+endfunction
+"}}}
 function! oldfilesearch#MRUList()  "{{{1
 	" Creates list of most recently edited files in new window
 	if !exists('b:newFile')
 		" b:newFile should be defined via autocmd on BufNewFile, and undefined
 		" on BufWritePost or BufReadPost. In short, overwrite new, empty
 		" buffers.
-		belowright new +setlocal\ buftype=nofile
+		belowright new +setlocal\ buftype=nofile\ nowrap\ filetype=none\ nospell\ cursorline
 	else
-		new +setlocal\ buftype=nofile
+		new +setlocal\ buftype=nofile\ nowrap\ filetype=none\ nospell\ cursorline
 		only
 	endif
-	set nowrap
-	set filetype=none
-	setlocal nospell
-	set cursorline
+	" TODO: Need to un-highlight these when exiting the oldfile buffer!
 	highlight link FileName Identifier
 	highlight link FilePath Comment
 	call matchadd('FileName', '^.\{-}\ze || ', -1)
@@ -105,6 +123,7 @@ function! oldfilesearch#MRUList()  "{{{1
     " Remove typically unwanted files
 	if g:OldFileSearch_dotfiles == 1
 		" dot files ...
+		silent global/^\./d
 		silent global/\(|| \|\/\)\./d
 	endif
 	if g:OldFileSearch_helpfiles == 1
@@ -124,5 +143,6 @@ function! oldfilesearch#MRUList()  "{{{1
 	nnoremap <silent> <buffer> v :call <SID>OpenMRUFile('belowright vsplit')<CR>
 	nnoremap <silent> <buffer> q ZQ
 	nnoremap <buffer> / :call <SID>MRUSearch()<CR>
+	nnoremap <buffer> d :call <SID>MRUDelete()<CR>
 endfunction
 "}}}

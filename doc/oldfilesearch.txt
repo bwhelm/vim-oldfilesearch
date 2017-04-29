@@ -20,14 +20,18 @@ hitting:
 	s:    open in new horizontal split (below)
 	t:    open in new tab
 	v:    open in new vertical split (right)
-In addition, the old file list can be closed by hitting `q`.
 
-The old file list can be searched by hitting `/`. This brings up a `search>`
-prompt in the command line, and lines in the old file list will be filtered in
-real time as you type. Standard Vim regex can be used, and words separated by
-spaces must all occur in the same line (either filename or path), in any
-order. While searching, hitting <CR> will end the search, keeping the filtered
-list, whereas hitting <ESC> will end, restoring the previous, unfiltered list.
+Other keymappings in the old file list buffer are:
+    d:    delete file from the old file list (in .viminfo)
+	q:    close the old file list buffer
+	/:    search and filter the old file list.
+
+A bit more explanation on searching: Hitting `/` brings up a `search>` prompt
+in the command line, and lines in the old file list will be filtered in real
+time as you type. Standard Vim regex can be used, and words separated by spaces
+must all occur in the same line (either filename or path), in any order. While
+searching, hitting <CR> will end the search, keeping the filtered list, whereas
+hitting <ESC> will end, restoring the previous, unfiltered list.
 
 Note that filtering is preserved in the undo list. This includes filtering for
 filetypes as defined below. Hence, hitting `u` will undo these filtering
