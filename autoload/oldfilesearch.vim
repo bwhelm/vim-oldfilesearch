@@ -6,10 +6,17 @@ function! s:OpenMRUFile(command) abort  "{{{1
 	" s:NoFile().
     let l:file = getline('.')
 	if len(tabpagebuflist()) > 1
-		q
+		quit
 	endif
-	let [l:filename, l:filepath] = split(l:file, ' || ')
-    execute a:command fnamemodify(fnameescape(l:filepath . '/' . l:filename), ':p')
+	try
+		let [l:filename, l:filepath] = split(l:file, ' || ')
+	catch /E688/
+		echohl Error
+		echom "No file selected! Hit 'q' to quit or 'u' to undo last search."
+		echohl None
+		return
+	endtry
+	execute a:command fnamemodify(fnameescape(l:filepath . '/' . l:filename), ':p')
 	set nocursorline
 endfunction
 "}}}
@@ -24,6 +31,7 @@ function! s:MRUSearch() abort  "{{{1
 	set hlsearch
 	let l:text = getline(1, '$')
 	let l:queryText = ''
+	setlocal modifiable
 	" Make a change to start the undoable change
 	execute "normal! i \<BS>"
 	while 1
@@ -32,10 +40,14 @@ function! s:MRUSearch() abort  "{{{1
 		let l:char = getchar()
 		if l:char == 27                 " <ESC>
 			undojoin | call setline(1, l:text)
+			setlocal nomodifiable
+			redraw
 			break
 		elseif l:char ==? "\<BS>"
 			let l:queryText = l:queryText[:-2]
 		elseif l:char == 13             " <CR>
+			setlocal nomodifiable
+			redraw
 			break
 		else
 			let l:queryText .= nr2char(l:char)
@@ -45,11 +57,10 @@ function! s:MRUSearch() abort  "{{{1
 		for s:query in l:queryList
 			let l:filteredText = filter(l:filteredText, function('<SID>FilterFiles'))
 		endfor
-		undojoin | normal! ggdG
+		undojoin | 0,$delete_
 		undojoin | call setline(1, l:filteredText)
 		let l:strippedQuery = substitute(l:queryText, ' $', '', '')  " strip trailing space
 		let @/ = substitute(l:strippedQuery, ' ', '\\|', 'g')
-		redraw
 	endwhile
 	let @/ = l:saveSearch
 	let &hlsearch = l:saveHLS
@@ -71,10 +82,26 @@ function! s:MRUDelete() abort  "{{{1
 		return
 	else
 		split ~/.viminfo
-		execute '%s/^> ' . l:file . '\(\n[^>]*\)*//g'
+		try
+			execute '%s/^> ' . l:file . '\(\n[^>]*\)*//g'
+		endtry
 		wq
-		d
+		setlocal modifiable
+		delete_
+		setlocal nomodifiable
 	endif
+endfunction
+"}}}
+function! s:MRUUndo() abort  "{{{1
+	setlocal modifiable
+	undo
+	setlocal nomodifiable
+endfunction
+"}}}
+function! s:MRURedo() abort  "{{{1
+	setlocal modifiable
+	redo
+	setlocal nomodifiable
 endfunction
 "}}}
 function! oldfilesearch#MRUList() abort  "{{{1
@@ -95,12 +122,12 @@ function! oldfilesearch#MRUList() abort  "{{{1
 	" Break undo sequence
 	execute "normal! i\<C-G>u\<Esc>"
 	" Remove netrw and fugitive files
-	silent global/\/runtime\/doc/d
+	silent global/\/runtime\/doc/delete_
 	if g:OldFileSearch_netrw == 1
-		silent global/\[BufExplorer\]/d
+		silent global/\[BufExplorer\]/delete_
 	endif
 	if g:OldFileSearch_fugitive == 1
-		silent global/|| fugitive:\/\//d
+		silent global/|| fugitive:\/\//delete_
 	endif
 	let l:text = getline(1, '$')
 	let l:count = 0
@@ -113,7 +140,7 @@ function! oldfilesearch#MRUList() abort  "{{{1
             let l:count += 1
             call setline(l:count, l:filename . ' || ' . l:path)
         else
-            execute l:count + 1 . 'delete'
+            execute l:count + 1 . 'delete_'
         endif
 	endfor
     " Break undo sequence
@@ -121,26 +148,29 @@ function! oldfilesearch#MRUList() abort  "{{{1
     " Remove typically unwanted files
 	if g:OldFileSearch_dotfiles == 1
 		" dot files ...
-		silent global/^\./d
-		silent global/\(|| \|\/\)\./d
+		silent global/^\./delete_
+		silent global/\(|| \|\/\)\./delete_
 	endif
 	if g:OldFileSearch_helpfiles == 1
 		" help files ... (Note: these are covered by dot files....)
-		silent global/\S*\.txt || .*\/doc$/d
+		silent global/\S*\.txt || .*\/doc$/delete_
 	endif
 	if g:OldFileSearch_remotefiles == 1
 		" remote files ...
-		silent global/|| scp:\/\//d
+		silent global/|| scp:\/\//delete_
 	endif
 	" blank lines ...
-	silent global/^$/d
+	silent global/^$/delete_
 	execute "normal! gg\<C-W>K"
+	setlocal nomodifiable
 	nnoremap <silent> <buffer> <CR> :call <SID>OpenMRUFile('edit')<CR>
     nnoremap <silent> <buffer> s :call <SID>OpenMRUFile('split')<CR>
     nnoremap <silent> <buffer> t :call <SID>OpenMRUFile('tabedit')<CR>
 	nnoremap <silent> <buffer> v :call <SID>OpenMRUFile('belowright vsplit')<CR>
 	nnoremap <silent> <buffer> q ZQ
 	nnoremap <buffer> / :call <SID>MRUSearch()<CR>
-	nnoremap <buffer> d :call <SID>MRUDelete()<CR>
+	nnoremap <buffer> D :call <SID>MRUDelete()<CR>
+	nnoremap <buffer> u :call <SID>MRUUndo()<CR>
+	nnoremap <buffer> <C-R> :call <SID>MRURedo()<CR>
 endfunction
 "}}}
