@@ -13,6 +13,7 @@ let g:OldFileSearch_loaded = 1
 
 " Define command
 command! Oldfiles call oldfilesearch#MRUList()
+command! BL call oldfilesearch#BufferList()
 
 " Configuration
 let g:OldFileSearch_netrw = get(g:, 'OldFileSearch_netrw', 1)
@@ -25,3 +26,5 @@ let g:OldFileSearch_remotefiles = get(g:, 'OldFileSearch_remotefiles', 1)
 " mnemonic: 'Files-Old' (or 'Files-Open')
 let g:OldFileSearch_openMRU = get(g:, 'OldFileSearch_openMRU', '<Leader>fo')
 execute 'noremap <unique>' g:OldFileSearch_openMRU ':Oldfiles<CR>'
+let g:OldFileSearch_openBL = get(g:, 'OldFileSearch_openBL', '<Leader>b')
+execute 'noremap <unique>' g:OldFileSearch_openBL ':BL<CR>'

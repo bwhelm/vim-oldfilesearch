@@ -6,25 +6,27 @@ entries in the old file list.
 CONTENTS
 
 	1. Using OldFileSearch ............................. |using-oldfilesearch|
-	2. Configuring OldFileSearch ................. |configuring-oldfilesearch|
+	2. Using BufferList ................................... |using-bufferlist|
+	3. Configuring OldFileSearch ................. |configuring-oldfilesearch|
 
 USING OLDFILESEARCH                                      *using-oldfilesearch*
 
-OldFileSearch defines one command: ':Oldfiles'. This command will read in the
-|v:oldfile| list, filter out some types of files (configurable as defined
-below), and display them as:
+This plugin defines one command for coping with the oldfiles list: ':Oldfiles'.
+This command will read in the |v:oldfile| list, filter out some types of files
+(configurable as defined below), and display them as:
 	filename.ext || ~/path/to/file
 Select a file by putting the cursor anywhere on its line, and open it by
 hitting:
-	<CR>: open in current window
-	s:    open in new horizontal split (below)
-	t:    open in new tab
-	v:    open in new vertical split (right)
+	<CR>:  open in current window
+	s:     open in new horizontal split (below)
+	t:     open in new tab
+	v:     open in new vertical split (right)
 
 Other keymappings in the old file list buffer are:
-    d:    delete file from the old file list (in .viminfo)
-	q:    close the old file list buffer
-	/:    search and filter the old file list.
+    d:     delete file from the old file list (in .viminfo)
+	q:     close the old file list buffer
+	<Esc>: close the old file list buffer
+	/:     search and filter the old file list.
 
 A bit more explanation on searching: Hitting `/` brings up a `search>` prompt
 in the command line, and lines in the old file list will be filtered in real
@@ -36,6 +38,24 @@ hitting <ESC> will end, restoring the previous, unfiltered list.
 Note that filtering is preserved in the undo list. This includes filtering for
 filetypes as defined below. Hence, hitting `u` will undo these filtering
 steps.
+
+USING BUFFERLIST                                          *using-bufferlist*
+
+This plugin defines another command for coping with the bufferlist: ':BL'. This
+command will read in the results of |:buffers!|, and initially display the list
+of listed buffers. (Unlisted buffers are revealed by hitting `u` to undo, and
+are hidden again by hitting `<C-R>`.) Again, select a file by putting the
+cursor anywhere on its line, and open it by hitting (just as with ':Oldfiles'):
+	<CR>:  open in current window
+	s:     open in new horizontal split (below)
+	t:     open in new tab
+	v:     open in new vertical split (right)
+
+Other keymappings in the buffer list are:
+	q:     close the old file list buffer
+	<Esc>: close the old file list buffer
+	/:     search and filter the old file list.
+Again, these work just as with the old file list buffer.
 
 CONFIGURING OLDFILESEARCH                        *configuring-oldfilesearch*
 
@@ -56,3 +76,6 @@ Sets whether remote buffers are filtered out.
 
 |g:OldFileSearch_openMRU| = '<Leader>of'           *g:OldFileSearch_openMRU*
 Defines the mapping for the |:Oldfiles| command.
+
+|g:OldFileSearch_openBL| = '<Leader>b'              *g:OldFileSearch_openBL* 
+Defines the mapping for the |:BL| command.
