@@ -12,18 +12,11 @@ function! s:CreateWindow(firstList, secondList)  "{{{1
 		let l:oneWindow = 0
 	endif
 	setlocal buftype=nofile
-		   \ filetype=none
+		   \ filetype=ofs_filelist
 		   \ noswapfile
 		   \ nowrap
 		   \ nospell
 		   \ cursorline
-	" TODO: Need to un-highlight these when exiting the oldfile buffer!
-	highlight link FileName Identifier
-	highlight link FilePath Comment
-	highlight link FileDivider Structure
-	call matchadd('FileName', '^.\{-}\ze ||')
-	call matchadd('FilePath', '^.\{-} || \zs.*')
-	call matchadd('FileDivider', ' || ')
 	" Break undo sequence
 	execute "normal! i\<C-G>u\<Esc>"
 	" Add text
