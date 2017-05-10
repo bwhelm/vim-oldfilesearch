@@ -16,7 +16,7 @@ function! s:CreateWindow(firstList, secondList)  "{{{1
 		   \ noswapfile
 		   \ nowrap
 		   \ nospell
-		   \ cursorline
+		   \ nocursorline
 	" Break undo sequence
 	execute "normal! i\<C-G>u\<Esc>"
 	" Add text
@@ -242,7 +242,6 @@ function! oldfilesearch#BufferList() abort  "{{{1
 		catch /E684/  " list index out of range
 		endtry
 	endfor
-	echom l:line
 	if len(l:hiddenLineList) > 1
 		" Create window first with hidden list, then with unhidden list
 		call <SID>CreateWindow(l:hiddenLineList, l:bufferLineList)
