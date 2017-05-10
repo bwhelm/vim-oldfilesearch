@@ -26,7 +26,7 @@ function! s:CreateWindow(firstList, secondList)  "{{{1
 	" Remove blank lines
 	call setline(1, a:secondList)
 	try
-		silent execute len(a:secondList) + 1 . ',$d'
+		silent execute len(a:secondList) + 1 . ',$delete_'
 	catch /E493/
 	endtry
 	silent global/^$/delete_
