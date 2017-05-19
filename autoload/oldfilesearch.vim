@@ -52,20 +52,11 @@ function! s:OpenFile(command) abort  "{{{1
 		execute ':' . l:line
 	catch /E688/  " No file under cursor
 		echohl Error
-		echom "No file selected! Hit 'q' to quit or 'u' to undo last search."
+		echo "No file selected! Hit 'q' to quit or 'u' to undo last search."
 		echohl None
 		return
 	endtry
 	set nocursorline
-endfunction
-"}}}
-function! s:FilterFiles(idx, val) abort  "{{{1
-	try
-		let l:reply = a:val =~ s:query
-	catch
-		let l:reply = 1
-	endtry
-	return l:reply
 endfunction
 "}}}
 function! s:FilterFileList() abort  "{{{1
@@ -100,7 +91,7 @@ function! s:FilterFileList() abort  "{{{1
 		let l:queryList = split(l:queryText, ' ')
 		for s:query in l:queryList
 			try
-				let l:filteredText = filter(l:filteredText, function('<SID>FilterFiles'))
+				let l:filteredText = filter(l:filteredText, 'v:val =~ s:query')
 			endtry
 		endfor
 		undojoin | 0,$delete_
@@ -124,7 +115,7 @@ function! s:MRUDelete() abort  "{{{1
 	" and delete them.
 	if has('nvim')
 		"split ~/.nviminfo
-		echoerr 'Not working yet'
+		echoerr 'Not implemented ...'
 		return
 	else
 		split ~/.viminfo
@@ -192,7 +183,8 @@ function! oldfilesearch#MRUList() abort  "{{{1
 		0
 	else
 		" Move to top and move window to top
-		execute "normal! gg\<C-W>K"
+		0
+		wincmd K
 	endif
 	nnoremap <silent> <buffer> <CR> :call <SID>OpenFile('edit')<CR>
     nnoremap <silent> <buffer> s :call <SID>OpenFile('split')<CR>
@@ -245,28 +237,28 @@ function! oldfilesearch#BufferList() abort  "{{{1
 	if len(l:hiddenLineList) > 1
 		" Create window first with hidden list, then with unhidden list
 		call <SID>CreateWindow(l:hiddenLineList, l:bufferLineList)
-		" Make sure top line is visible
+		" Make sure top line is visible (`:0` doesn't seem to work.)
 		normal! gg
 		" Move to current buffer line
 		execute ':' . l:line
 		" Move window to top
-		execute "normal \<C-w>K"
+		wincmd K
 	else
 		echohl Error
-		echom 'No other buffers!'
+		echo 'No other buffers!'
 		echohl None
 		return
 	endif
-	nnoremap <buffer><silent> <CR> :call <SID>OpenFile('buffer')<CR>
-	nnoremap <buffer><silent> s :call <SID>OpenFile('sbuffer')<CR>
-	nnoremap <buffer><silent> a :quit \| ball<CR>
-	nnoremap <buffer><silent> q ZQ<CR>
-	nnoremap <buffer><silent> <Esc> ZQ<CR>
+	nnoremap <silent><buffer> <CR> :call <SID>OpenFile('buffer')<CR>
+	nnoremap <silent><buffer> s :call <SID>OpenFile('sbuffer')<CR>
+	nnoremap <silent><buffer> a :quit \| ball<CR>
+	nnoremap <silent><buffer> q ZQ<CR>
+	nnoremap <silent><buffer> <Esc> ZQ<CR>
 	nnoremap <buffer> / :call <SID>FilterFileList()<CR>
 	nnoremap <buffer> u :call <SID>UndoFileListChange()<CR>
 	nnoremap <buffer> <C-R> :call <SID>RedoFileListChange()<CR>
-	nnoremap <silent> <buffer> t :call <SID>OpenFile("tabedit \<Bar> buffer")<CR>
-	nnoremap <silent> <buffer> v
+	nnoremap <silent><buffer> t :call <SID>OpenFile("tabedit \<Bar> buffer")<CR>
+	nnoremap <silent><buffer> v
 				\ :call <SID>OpenFile("belowright vsplit \<Bar> buffer")<CR>
 endfunction
 "}}}
