@@ -2,7 +2,7 @@ scriptencoding utf-8
 " vim: set fdm=marker foldlevel=0:
 
 function! s:CreateWindow(firstList, secondList)  "{{{1
-	if bufname('%') == '' && getbufvar('%', '&mod') == 0
+	if bufname('%') ==# '' && getbufvar('%', '&mod') == 0
 		" if unnamed buffer that's not modified
 		new
 		only
@@ -208,8 +208,8 @@ function! oldfilesearch#BufferList() abort  "{{{1
 	let l:lineList = split(@a, '\n')
 	let @a = l:oldA
 	unlet l:oldA
-	let bufferLineList = []  " Keep track of normal buffer list ...
-	let hiddenLineList = []  " ... and list with hidden buffers 
+	let l:bufferLineList = []  " Keep track of normal buffer list ...
+	let l:hiddenLineList = []  " ... and list with hidden buffers 
 	let l:line = 0
 	let l:listedCounter = 0
 	for l:item in range(len(l:lineList))
@@ -217,15 +217,15 @@ function! oldfilesearch#BufferList() abort  "{{{1
 				\ '\s*\(\d\+u\?\)\s\+[^"]*"\(.\+\/\)\?\([^"]*\)"\s*line\s*\(\d\+\)')
 		try
 			let l:number = str2nr(l:bmatch[1])
-			let l:unlisted = l:bmatch[1] =~ 'u'
+			let l:unlisted = l:bmatch[1] =~? 'u'
 			let l:thisItem = l:bmatch[3] . ' || ' .
 							\ fnamemodify(l:bmatch[2], ':p:~') . ' || ' .
 							\ l:number . ',' . l:bmatch[4]
 			if l:unlisted
-				call add(hiddenLineList, l:thisItem)
+				call add(l:hiddenLineList, l:thisItem)
 			else
-				call add(hiddenLineList, l:thisItem)
-				call add(bufferLineList, l:thisItem)
+				call add(l:hiddenLineList, l:thisItem)
+				call add(l:bufferLineList, l:thisItem)
 				let l:listedCounter += 1
 			endif
 			if l:number == l:bufNum
