@@ -23,7 +23,7 @@ hitting:
 	v:     open in new vertical split (right)
 
 Other keymappings in the old file list buffer are:
-    d:     delete file from the old file list (in .viminfo)
+	d:     delete file from the old file list (in .viminfo)
 	q:     close the old file list buffer
 	<Esc>: close the old file list buffer
 	/:     search and filter the old file list.

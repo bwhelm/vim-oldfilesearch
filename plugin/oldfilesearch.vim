@@ -28,3 +28,6 @@ let g:OldFileSearch_openMRU = get(g:, 'OldFileSearch_openMRU', '<Leader>fo')
 execute 'noremap <unique>' g:OldFileSearch_openMRU ':Oldfiles<CR>'
 let g:OldFileSearch_openBL = get(g:, 'OldFileSearch_openBL', '<Leader>b')
 execute 'noremap <unique>' g:OldFileSearch_openBL ':BL<CR>'
+
+" Open netrw at current file
+nnoremap <silent> <Leader>d :call oldfilesearch#ExploreAtFilename()<CR>
