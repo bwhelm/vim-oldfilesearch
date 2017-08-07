@@ -1,7 +1,7 @@
 scriptencoding utf-8
 " vim: set fdm=marker foldlevel=0:
 
-function! s:CreateWindow(firstList, secondList)  "{{{1
+function! s:CreateWindow(firstList, secondList) abort  "{{{1
 	if bufname('%') ==# '' && getbufvar('%', '&mod') == 0
 		" if unnamed buffer that's not modified
 		new
@@ -145,15 +145,15 @@ function! oldfilesearch#MRUList() abort  "{{{1
 	" Creates list of most recently edited files in new window
 	let l:lineList = v:oldfiles
 	" Remove netrw and fugitive files
-	call filter(l:lineList, 'v:val !~ "\\/runtime\\/doc"')
+	call filter(l:lineList, 'v:val !~# "\\/runtime\\/doc"')
 	if g:OldFileSearch_netrw == 1
-		call filter(l:lineList, 'v:val !~ "\\[BufExplorer\\]"')
+		call filter(l:lineList, 'v:val !~# "\\[BufExplorer\\]"')
 	endif
 	if g:OldFileSearch_fugitive == 1
-		call filter(l:lineList, 'v:val !~ "fugitive:\\/\\/"')
+		call filter(l:lineList, 'v:val !~# "fugitive:\\/\\/"')
 	endif
 	" Throw out files that aren't readable
-	call filter(l:lineList, 'filereadable(fnamemodify(v:val, ":p"))')
+	call filter(l:lineList, 'filereadable(fnamemodify(v:val, '':p''))')
 	" Reformat lines for pretty presentation
 	let l:firstList = []
 	for l:line in l:lineList
@@ -166,16 +166,16 @@ function! oldfilesearch#MRUList() abort  "{{{1
     " Remove typically unwanted files
 	if g:OldFileSearch_dotfiles == 1
 		" dot files ...
-		call filter(l:firstList, 'v:val !~ "\\/\\."')
-		call filter(l:firstList, 'v:val !~ "^\\."')
+		call filter(l:firstList, 'v:val !~# "\\/\\."')
+		call filter(l:firstList, 'v:val !~# "^\\."')
 	endif
 	if g:OldFileSearch_helpfiles == 1
 		" help files ... (Note: these are covered by dot files....)
-		call filter(l:firstList, 'v:val !~ "\\/doc$.*\S*\\.txt"')
+		call filter(l:firstList, 'v:val !~# "\\/doc$.*\S*\\.txt"')
 	endif
 	if g:OldFileSearch_remotefiles == 1
 		" remote files ...
-		call filter(l:firstList, 'v:val !~ "scp:\\/\\/"')
+		call filter(l:firstList, 'v:val !~# "scp:\\/\\/"')
 	endif
 	let l:oneWindow = <SID>CreateWindow(l:secondList, l:firstList)
 	if l:oneWindow
@@ -196,6 +196,8 @@ function! oldfilesearch#MRUList() abort  "{{{1
 	nnoremap <buffer> D :call <SID>MRUDelete()<CR>
 	nnoremap <buffer> u :call <SID>UndoFileListChange()<CR>
 	nnoremap <buffer> <C-R> :call <SID>RedoFileListChange()<CR>
+    nnoremap <silent><buffer> e :enew<CR>
+    nnoremap <silent><buffer> i :enew<CR>i
 endfunction
 "}}}
 function! oldfilesearch#BufferList() abort  "{{{1
@@ -260,6 +262,8 @@ function! oldfilesearch#BufferList() abort  "{{{1
 	nnoremap <silent><buffer> t :call <SID>OpenFile("tabedit \<Bar> buffer")<CR>
 	nnoremap <silent><buffer> v
 				\ :call <SID>OpenFile("belowright vsplit \<Bar> buffer")<CR>
+    nnoremap <silent><buffer> e :enew<CR>
+    nnoremap <silent><buffer> i :enew<CR>i
 endfunction
 "}}}
 function! oldfilesearch#ExploreAtFilename() abort  " {{{1
