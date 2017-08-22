@@ -270,7 +270,7 @@ function! oldfilesearch#ExploreAtFilename() abort  " {{{1
 " Open netrw at the filename of the current buffer
 	" Note: The messing around with &shortmess is to ensure that the 'Press
 	" <Enter> or type command to continue' message does not show up.
-	let l:winID = win_getid()
+	let l:winID = winnr()
 	if getbufvar('%', '&mod')
 		echohl WarningMsg
 		echo 'Save buffer first!'
@@ -282,7 +282,7 @@ function! oldfilesearch#ExploreAtFilename() abort  " {{{1
 	let l:shortmess = &shortmess
 	set shortmess+=s
 	execute 'silent edit ' . fnameescape(l:myPath) . '/'
-	call win_gotoid(l:winID)
+    execute l:winID . 'wincmd w'
 	if l:myFilename !=# ''
 		execute '/' . l:myFilename
 	endif
