@@ -297,7 +297,7 @@ function! oldfilesearch#ExploreAtFilename() abort  " {{{1
     execute 'silent edit ' . fnameescape(l:myPath) . '/'
     execute l:winID . 'wincmd w'
     if l:myFilename !=# ''
-        execute '/' . l:myFilename
+        call search(l:myFilename)
     endif
     execute 'set shortmess=' . l:shortmess
 endfunction

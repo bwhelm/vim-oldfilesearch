@@ -5,21 +5,21 @@ entries in the old file list.
 
 CONTENTS
 
-	1. Using OldFileSearch ............................. |using-oldfilesearch|
-	2. Configuring OldFileSearch ................. |configuring-oldfilesearch|
+    1. Using OldFileSearch ............................. |using-oldfilesearch|
+    2. Configuring OldFileSearch ................. |configuring-oldfilesearch|
 
 USING OLDFILESEARCH                                      *using-oldfilesearch*
 
 OldFileSearch defines one command: |:Oldfiles|. This command will read in the
 'v:oldfile' list, filter out some types of files (configurable as defined
 below), and display them as:
-	filename.ext || ~/path/to/file
+    filename.ext || ~/path/to/file
 Select a file by putting the cursor anywhere on its line, and open it by
 hitting:
-	<CR>: open in current window
-	s:    open in new horizontal split (below)
-	t:    open in new tab
-	v:    open in new vertical split (right)
+    <CR>: open in current window
+    s:    open in new horizontal split (below)
+    t:    open in new tab
+    v:    open in new vertical split (right)
 In addition, the old file list can be closed by hitting `q`.
 
 The old file list can be searched by hitting `/`. This brings up a `search>`
