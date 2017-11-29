@@ -212,6 +212,7 @@ endfunction
 "}}}
 function! oldfilesearch#BufferList() abort  "{{{1
     " Creates list of current buffers in new window
+    let l:myFilename = fnamemodify(expand('%'), ':t')
     let l:bufNum = bufnr('%')
     let l:oldA = @a
     redir @a
@@ -257,6 +258,9 @@ function! oldfilesearch#BufferList() abort  "{{{1
         echohl None
         return
     endif
+    if l:myFilename !=# ''
+        silent call search('\C' . l:myFilename)
+    endif
     execute 'nnoremap <silent><buffer> <CR> :call <SID>OpenFile(''buffer'', '
                 \ . l:winNum . ', ' . l:tabNum . ')<CR>'
     execute 'nnoremap <silent><buffer> s :call <SID>OpenFile(''sbuffer'', '
@@ -292,13 +296,13 @@ function! oldfilesearch#ExploreAtFilename() abort  " {{{1
     endif
     let l:myFilename = fnamemodify(expand('%'), ':t')
     let l:myPath = fnamemodify(expand('%'), ':p:h')
-    let l:shortmess = &shortmess
-    set shortmess+=s
+    " let l:shortmess = &shortmess
+    " set shortmess+=s
     execute 'silent edit ' . fnameescape(l:myPath) . '/'
     execute l:winID . 'wincmd w'
     if l:myFilename !=# ''
-        call search('\C' . l:myFilename)
+        silent call search('\C' . l:myFilename)
     endif
-    execute 'set shortmess=' . l:shortmess
+    " execute 'set shortmess=' . l:shortmess
 endfunction
 "}}}
