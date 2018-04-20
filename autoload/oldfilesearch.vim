@@ -64,14 +64,14 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
         echohl None
         return
     endtry
-    set nocursorline
+    setlocal nocursorline
 endfunction
 "}}}
 function! s:FilterFileList() abort  "{{{1
     let l:saveSearch = @/
     let l:saveHLS = &hlsearch
     let @/ = ''
-    set hlsearch
+    setlocal hlsearch
     let l:text = getline(1, '$')
     let l:queryText = ''
     setlocal modifiable
