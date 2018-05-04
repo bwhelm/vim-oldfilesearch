@@ -271,12 +271,12 @@ function! oldfilesearch#BufferList() abort  "{{{1
                 \ . '<Bar> buffer'', ' . l:winNum . ', ' . l:tabNum . ')<CR>'
     nnoremap <silent><buffer> a :quit \| ball<CR>
     execute 'nnoremap <silent><buffer> q :quit! <Bar> ' . l:tabNum
-                \ . 'tab <Bar> ' . l:winNum . 'wincmd w<CR>'
+                \ . 'tabnext <Bar> ' . l:winNum . 'wincmd w<CR>'
     execute 'nnoremap <silent><buffer> <Esc> :quit! <Bar> ' . l:tabNum
-                \ . 'tab <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> e :quit! <Bar> ' . l:tabNum . 'tab <Bar> '
+                \ . 'tabnext <Bar> ' . l:winNum . 'wincmd w<CR>'
+    execute 'nnoremap <silent><buffer> e :quit! <Bar> ' . l:tabNum . 'tabnext <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>'
-    execute 'nnoremap <silent><buffer> i :quit! <Bar> ' . l:tabNum . 'tab <Bar> '
+    execute 'nnoremap <silent><buffer> i :quit! <Bar> ' . l:tabNum . 'tabnext <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>i'
     nnoremap <buffer> / :call <SID>FilterFileList()<CR>
     nnoremap <buffer> u :call <SID>UndoFileListChange()<CR>
