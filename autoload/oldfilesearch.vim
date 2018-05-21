@@ -44,6 +44,12 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
         " Execute the new command from that window
         execute a:command fnamemodify(fnameescape(l:filepath . '/' . l:filename),
                     \ ':p')
+        " Change local dir to document directory ... or git directory.
+        lcd %:p:h
+        try  " Get top-level git directory
+            execute 'lcd ' . system('git rev-parse --show-toplevel')
+        catch /E344/  " Not in git directory
+        endtry
     catch /E687/  " We're in buffer list, not old file list
         let [l:filename, l:filepath, l:location] = split(l:file, ' || ')
         let [l:buffer, l:line] = split(l:location, ',')
