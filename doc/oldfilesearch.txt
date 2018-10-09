@@ -6,8 +6,9 @@ entries in the old file list.
 CONTENTS
 
     1. Using OldFileSearch ............................. |using-oldfilesearch|
-    2. Using BufferList ................................... |using-bufferlist|
-    3. Configuring OldFileSearch ................. |configuring-oldfilesearch|
+    2. Using iolddocs (iOS only) ............................ |using-iolddocs|
+    3. Using BufferList ................................... |using-bufferlist|
+    4. Configuring OldFileSearch ................. |configuring-oldfilesearch|
 
 USING OLDFILESEARCH                                      *using-oldfilesearch*
 
@@ -23,7 +24,7 @@ hitting:
     v:     open in new vertical split (right)
 
 Other keymappings in the old file list buffer are:
-    d:     delete file from the old file list (in .viminfo)
+    D:     delete file from the old file list (in .viminfo)
     q:     close the old file list buffer
     <Esc>: close the old file list buffer
     /:     search and filter the old file list.
@@ -38,6 +39,18 @@ hitting <ESC> will end, restoring the previous, unfiltered list.
 Note that filtering is preserved in the undo list. This includes filtering for
 filetypes as defined below. Hence, hitting `u` will undo these filtering
 steps.
+
+USING iolddocs                                              *using-iolddocs*
+
+On iOS, this plugin defines a command for coping with the iolddocs list:
+':IOldDocs'. Similar to |using-oldfilesearch|, this will read in the
+':iolddocs' list, cleaning up the messy and incomprehensible directory paths,
+and present them ready for selecting and opening or removing. The following
+keymaps are defined for this temporaray buffer:
+    <CR>:  open selected file in new tab
+    D:     delete file from the iolddocs list
+    q:     close the olddocs list buffer
+    <Esc>: close the olddocs list buffer
 
 USING BUFFERLIST                                          *using-bufferlist*
 
@@ -79,3 +92,9 @@ Defines the mapping for the |:Oldfiles| command.
 
 |g:OldFileSearch_openBL| = '<Leader>b'              *g:OldFileSearch_openBL* 
 Defines the mapping for the |:BL| command.
+
+|g:OldFileSearch_openDir| = '<Leader>d'            *g:OldFileSearch_openDir* 
+Defines the mapping to open netrw at the current filename.
+
+|g:OldFileSearch_openIO| = '<Leader>io'              *g:OldFileSearch_openIO* 
+Defines the mapping for the |:IOldDocs| command.

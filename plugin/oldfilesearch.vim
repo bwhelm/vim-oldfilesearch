@@ -8,12 +8,24 @@
 if exists('g:OldFileSearch_loaded') || &compatible
     finish
 endif
-
 let g:OldFileSearch_loaded = 1
 
-" Define command
+" Check operating system
+try
+    " This should be either 'Darwin' (Mac) or 'Linux' (Raspberry Pi)
+    silent let s:system = system('uname')[:-2]
+catch  " Not on a unix system: must be ios
+    let s:system = 'ios'
+endtry
+let g:system = s:system
+
+" Define commands
 command! Oldfiles call oldfilesearch#MRUList()
 command! BL call oldfilesearch#BufferList()
+
+if g:system ==# 'ios'
+    command! IOldDocs call oldfilesearch#IOld()
+endif
 
 " Configuration
 let g:OldFileSearch_netrw = get(g:, 'OldFileSearch_netrw', 1)
@@ -26,8 +38,16 @@ let g:OldFileSearch_remotefiles = get(g:, 'OldFileSearch_remotefiles', 1)
 " mnemonic: 'Files-Old' (or 'Files-Open')
 let g:OldFileSearch_openMRU = get(g:, 'OldFileSearch_openMRU', '<Leader>fo')
 execute 'noremap <unique>' g:OldFileSearch_openMRU ':Oldfiles<CR>'
+" mnemonic: 'Buffer List'
 let g:OldFileSearch_openBL = get(g:, 'OldFileSearch_openBL', '<Leader>b')
 execute 'noremap <unique>' g:OldFileSearch_openBL ':BL<CR>'
 
+if g:system ==# 'ios'
+    " mnemonic: 'I Old'
+    let g:OldFileSearch_openIO = get(g:, 'OldFileSearch_openIO', '<Leader>io')
+    execute 'noremap <unique>' g:OldFileSearch_openIO ':IOldDocs<CR>'
+endif
+
 " Open netrw at current file
-nnoremap <silent> <Leader>d :call oldfilesearch#ExploreAtFilename()<CR>
+let g:OldFileSearch_openDir = get(g:, 'OldFileSearch_openDir', '<Leader>d')
+execute 'nnoremap <silent>' g:OldFileSearch_openDir ':call oldfilesearch#ExploreAtFilename()<CR>'
