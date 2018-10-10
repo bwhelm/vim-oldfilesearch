@@ -34,6 +34,9 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
         let l:line = line('.')
         quit
         execute a:command . ' ' . l:line
+        if a:winNum == 1
+            call oldfilesearch#IOld()
+        endif
         return
     endif
     let l:file = getline('.')
@@ -241,7 +244,7 @@ if g:system ==# 'ios'
         let l:line = line('.')
         echom 'Line number: ' . l:line
         nnoremap <silent> <buffer> <CR> :call <SID>OpenFile('iolddocs', 0, 0)<CR>
-        nnoremap <silent> <buffer> D :call <SID>OpenFile('iolddocs!', 0, 0)<CR>
+        nnoremap <silent> <buffer> D :call <SID>OpenFile('iolddocs!', 1, 0)<CR>
         nnoremap <silent><buffer> q :quit!<CR>
         nnoremap <silent><buffer> <Esc> :quit!<CR>
         nnoremap <buffer> u :call <SID>UndoFileListChange()<CR>
