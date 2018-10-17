@@ -32,7 +32,7 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
     " oldfilesearch#MRUList().
     if a:command =~# 'iolddocs'
         let l:line = line('.')
-        quit
+        bwipeout
         execute a:command . ' ' . l:line
         if a:winNum == 1
             call oldfilesearch#IOld()
@@ -42,12 +42,12 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
     let l:file = getline('.')
     " TODO: What do the next 3 lines do?
     if len(tabpagebuflist()) > 1
-        quit
+        bwipeout
     endif
     try
         let [l:filename, l:filepath] = split(l:file, ' || ')
         " Quit the special buffer, switch back to original tab and window
-        quit
+        bwipeout
         execute a:tabNum . 'tab'
         execute a:winNum . 'wincmd w'
         " Execute the new command from that window
@@ -65,7 +65,7 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
         let [l:filename, l:filepath, l:location] = split(l:file, ' || ')
         let [l:buffer, l:line] = split(l:location, ',')
         " Quit the special buffer, switch back to original tab and window
-        quit
+        bwipeout
         execute a:tabNum . 'tab'
         execute a:winNum . 'wincmd w'
         " Execute the new command from that window
@@ -73,7 +73,7 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
         execute ':' . l:line
     catch /E688/  " No file under cursor
         " Quit the special buffer, switch back to original tab and window
-        quit
+        bwipeout
         execute a:tabNum . 'tab'
         execute a:winNum . 'wincmd w'
         echohl Error
@@ -213,13 +213,13 @@ function! oldfilesearch#MRUList() abort  "{{{1
                 \ . l:winNum . ', ' . l:tabNum . ')<CR>'
     execute 'nnoremap <silent> <buffer> v :call <SID>OpenFile(''belowright '
                 \ . 'vsplit'', ' . l:winNum . ', ' . l:tabNum . ')<CR>'
-    execute 'nnoremap <silent><buffer> q :quit! <Bar> ' . l:tabNum
+    execute 'nnoremap <silent><buffer> q :bwipeout! <Bar> ' . l:tabNum
                 \ . 'tab <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> <Esc> :quit! <Bar> ' . l:tabNum
+    execute 'nnoremap <silent><buffer> <Esc> :bwipeout! <Bar> ' . l:tabNum
                 \ . 'tab <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> e :quit! <Bar> ' . l:tabNum . 'tab <Bar> '
+    execute 'nnoremap <silent><buffer> e :bwipeout! <Bar> ' . l:tabNum . 'tab <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>'
-    execute 'nnoremap <silent><buffer> i :quit! <Bar> ' . l:tabNum . 'tab <Bar> '
+    execute 'nnoremap <silent><buffer> i :bwipeout! <Bar> ' . l:tabNum . 'tab <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>i'
     nnoremap <buffer> / :call <SID>FilterFileList()<CR>
     nnoremap <buffer> D :call <SID>MRUDelete()<CR>
@@ -245,8 +245,8 @@ if g:system ==# 'ios'
         echom 'Line number: ' . l:line
         nnoremap <silent> <buffer> <CR> :call <SID>OpenFile('iolddocs', 0, 0)<CR>
         nnoremap <silent> <buffer> D :call <SID>OpenFile('iolddocs!', 1, 0)<CR>
-        nnoremap <silent><buffer> q :quit!<CR>
-        nnoremap <silent><buffer> <Esc> :quit!<CR>
+        nnoremap <silent><buffer> q :bwipeout!<CR>
+        nnoremap <silent><buffer> <Esc> :bwipeout!<CR>
         nnoremap <buffer> u :call <SID>UndoFileListChange()<CR>
         nnoremap <buffer> <C-R> :call <SID>RedoFileListChange()<CR>
     endfunction
@@ -312,13 +312,13 @@ function! oldfilesearch#BufferList() abort  "{{{1
     execute 'nnoremap <silent><buffer> v :call <SID>OpenFile(''belowright vsplit'
                 \ . '<Bar> buffer'', ' . l:winNum . ', ' . l:tabNum . ')<CR>'
     nnoremap <silent><buffer> a :quit \| ball<CR>
-    execute 'nnoremap <silent><buffer> q :quit! <Bar> ' . l:tabNum
+    execute 'nnoremap <silent><buffer> q :bwipeout! <Bar> ' . l:tabNum
                 \ . 'tabnext <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> <Esc> :quit! <Bar> ' . l:tabNum
+    execute 'nnoremap <silent><buffer> <Esc> :bwipeout! <Bar> ' . l:tabNum
                 \ . 'tabnext <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> e :quit! <Bar> ' . l:tabNum . 'tabnext <Bar> '
+    execute 'nnoremap <silent><buffer> e :bwipeout! <Bar> ' . l:tabNum . 'tabnext <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>'
-    execute 'nnoremap <silent><buffer> i :quit! <Bar> ' . l:tabNum . 'tabnext <Bar> '
+    execute 'nnoremap <silent><buffer> i :bwipeout! <Bar> ' . l:tabNum . 'tabnext <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>i'
     nnoremap <buffer> / :call <SID>FilterFileList()<CR>
     nnoremap <buffer> u :call <SID>UndoFileListChange()<CR>
