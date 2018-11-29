@@ -119,8 +119,7 @@ function! s:FilterFileList() abort  "{{{1
                 let l:filteredText = filter(l:filteredText, 'v:val =~ s:query')
             endtry
         endfor
-        undojoin | 0,$delete_
-        undojoin | call setline(1, l:filteredText)
+        undojoin | 0,$delete_ | call setline(1, l:filteredText)
         let l:strippedQuery = substitute(l:queryText, ' $', '', '')  " strip trailing space
         let @/ = substitute(l:strippedQuery, ' ', '\\|', 'g')
     endwhile
