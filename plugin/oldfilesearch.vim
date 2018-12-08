@@ -11,13 +11,13 @@ endif
 let g:OldFileSearch_loaded = 1
 
 " Check operating system
-try
-    " This should be either 'Darwin' (Mac) or 'Linux' (Raspberry Pi)
-    silent let s:system = system('uname')[:-2]
-catch  " Not on a unix system: must be ios
-    let s:system = 'ios'
-endtry
-let g:system = s:system
+if !exists('g:system')
+    if has('ios')
+        let g:system = 'ios'
+    else
+        let g:system = 'unknown'
+    endif
+endif
 
 " Define commands
 command! Oldfiles call oldfilesearch#MRUList()
