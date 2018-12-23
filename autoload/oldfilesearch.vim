@@ -200,9 +200,11 @@ function! oldfilesearch#MRUList() abort  "{{{1
     " Remove typically unwanted files
     if g:OldFileSearch_dotfiles == 1
         " dot files ...
-        call filter(l:firstList, 'v:val !~# "\\/\\.\|^\\."')
-        " call filter(l:firstList, 'v:val !~# "\\/\\."')
-        " call filter(l:firstList, 'v:val !~# "^\\."')
+        call filter(l:firstList, 'v:val !~# "\\/\\."')
+        call filter(l:firstList, 'v:val !~# "^\\."')
+        if g:system ==# 'ios'
+            call filter(l:firstList, 'v:val !~# "vim-folder"')
+        endif
     endif
     if g:OldFileSearch_helpfiles == 1
         " help files ... (Note: these are covered by dot files....)
