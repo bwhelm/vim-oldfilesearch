@@ -41,9 +41,9 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
     endif
     let l:file = getline('.')
     " TODO: What do the next 3 lines do?
-    if len(tabpagebuflist()) > 1
-        bwipeout
-    endif
+    " if len(tabpagebuflist()) > 1
+    "     bwipeout
+    " endif
     try
         let [l:filename, l:filepath] = split(l:file, ' || ')
         " Quit the special buffer, switch back to original tab and window
@@ -155,13 +155,25 @@ endfunction
 "}}}
 function! s:UndoFileListChange() abort  "{{{1
     setlocal modifiable
+    let l:save_s = @s
+    let l:save_t = @t
+    normal! msHmt
     undo
+    normal! 'tzt`s
+    let @s = l:save_s
+    let @t = l:save_t
     setlocal nomodifiable
 endfunction
 "}}}
 function! s:RedoFileListChange() abort  "{{{1
     setlocal modifiable
+    let l:save_s = @s
+    let l:save_t = @t
+    normal! msHmt
     redo
+    normal! 'tzt`s
+    let @s = l:save_s
+    let @t = l:save_t
     setlocal nomodifiable
 endfunction
 "}}}
@@ -176,8 +188,6 @@ function! oldfilesearch#MRUList() abort  "{{{1
     if g:OldFileSearch_fugitive == 1
         call filter(l:lineList, 'v:val !~# "fugitive:\\/\\/"')
     endif
-    " Throw out files that aren't readable
-    call filter(l:lineList, 'filereadable(fnamemodify(v:val, '':p''))')
     " Reformat lines for pretty presentation
     let l:firstList = []
     for l:line in l:lineList
@@ -190,8 +200,9 @@ function! oldfilesearch#MRUList() abort  "{{{1
     " Remove typically unwanted files
     if g:OldFileSearch_dotfiles == 1
         " dot files ...
-        call filter(l:firstList, 'v:val !~# "\\/\\."')
-        call filter(l:firstList, 'v:val !~# "^\\."')
+        call filter(l:firstList, 'v:val !~# "\\/\\.\|^\\."')
+        " call filter(l:firstList, 'v:val !~# "\\/\\."')
+        " call filter(l:firstList, 'v:val !~# "^\\."')
     endif
     if g:OldFileSearch_helpfiles == 1
         " help files ... (Note: these are covered by dot files....)
@@ -201,6 +212,9 @@ function! oldfilesearch#MRUList() abort  "{{{1
         " remote files ...
         call filter(l:firstList, 'v:val !~# "scp:\\/\\/"')
     endif
+    " Throw out files that aren't readable
+    call filter(l:lineList, 'filereadable(fnamemodify(v:val, '':p''))')
+
     let l:winNum = winnr()
     let l:tabNum = tabpagenr()
     let l:oneWindow = <SID>CreateWindow(l:secondList, l:firstList)
@@ -337,13 +351,10 @@ function! oldfilesearch#ExploreAtFilename() abort  " {{{1
     endif
     let l:myFilename = fnamemodify(expand('%'), ':t')
     let l:myPath = fnamemodify(expand('%'), ':p:h')
-    " let l:shortmess = &shortmess
-    " set shortmess+=s
     execute 'silent edit ' . fnameescape(l:myPath) . '/'
     execute l:winID . 'wincmd w'
     if l:myFilename !=# ''
         silent call search('\C' . l:myFilename)
     endif
-    " execute 'set shortmess=' . l:shortmess
 endfunction
 "}}}
