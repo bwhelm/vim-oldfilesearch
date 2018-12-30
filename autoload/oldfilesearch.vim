@@ -33,7 +33,7 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
     if a:command =~# 'iolddocs'
         let l:line = line('.')
         bwipeout
-        execute a:command . ' ' . l:line
+        execute a:command l:line
         if a:winNum == 1
             call oldfilesearch#IOld()
         endif
@@ -57,7 +57,7 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
         lcd %:p:h
         if g:system !=# 'ios'
             try  " Get top-level git directory
-                execute 'lcd ' . system('git rev-parse --show-toplevel')
+                execute 'lcd' system('git rev-parse --show-toplevel')
             catch /E344/  " Not in git directory
             endtry
         endif
@@ -143,9 +143,7 @@ function! s:MRUDelete() abort  "{{{1
         return
     else
         split ~/.viminfo
-        try
-            execute '%s/^> ' . l:file . '\(\n[^>]*\)*//g'
-        endtry
+        execute 'silent! %substitute/^>' l:file . '\(\n[^>]*\)*//g'
         wq
         setlocal modifiable
         delete_
@@ -221,20 +219,20 @@ function! oldfilesearch#MRUList() abort  "{{{1
     let l:tabNum = tabpagenr()
     let l:oneWindow = <SID>CreateWindow(l:secondList, l:firstList)
     execute 'nnoremap <silent> <buffer> <CR> :call <SID>OpenFile(''drop'', '
-                \ . l:winNum . ', ' . l:tabNum . ')<CR>'
+                \ . l:winNum . ',' l:tabNum . ')<CR>'
     execute 'nnoremap <silent> <buffer> s :call <SID>OpenFile(''split'', '
-                \ . l:winNum . ', ' . l:tabNum . ')<CR>'
+                \ . l:winNum . ',' l:tabNum . ')<CR>'
     execute 'nnoremap <silent> <buffer> t :call <SID>OpenFile(''tab drop'', '
-                \ . l:winNum . ', ' . l:tabNum . ')<CR>'
+                \ . l:winNum . ',' l:tabNum . ')<CR>'
     execute 'nnoremap <silent> <buffer> v :call <SID>OpenFile(''belowright '
-                \ . 'vsplit'', ' . l:winNum . ', ' . l:tabNum . ')<CR>'
-    execute 'nnoremap <silent><buffer> q :bwipeout! <Bar> ' . l:tabNum
-                \ . 'tab <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> <Esc> :bwipeout! <Bar> ' . l:tabNum
-                \ . 'tab <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> e :bwipeout! <Bar> ' . l:tabNum . 'tab <Bar> '
+                \ . 'vsplit'',' l:winNum . ',' l:tabNum . ')<CR>'
+    execute 'nnoremap <silent><buffer> q :bwipeout! <Bar>' l:tabNum
+                \ . 'tab <Bar>' l:winNum . 'wincmd w<CR>'
+    execute 'nnoremap <silent><buffer> <Esc> :bwipeout! <Bar>' l:tabNum
+                \ . 'tab <Bar>' l:winNum . 'wincmd w<CR>'
+    execute 'nnoremap <silent><buffer> e :bwipeout! <Bar>' l:tabNum . 'tab <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>'
-    execute 'nnoremap <silent><buffer> i :bwipeout! <Bar> ' . l:tabNum . 'tab <Bar> '
+    execute 'nnoremap <silent><buffer> i :bwipeout! <Bar>' l:tabNum . 'tab <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>i'
     nnoremap <buffer> / :call <SID>FilterFileList()<CR>
     nnoremap <buffer> D :call <SID>MRUDelete()<CR>
@@ -256,8 +254,6 @@ if g:system ==# 'ios'
             let l:firstList[item] = substitute(l:firstList[item], '\/.\{-}\([^\/]*\)$', '\1', '')
         endfor
         let l:oneWindow = <SID>CreateWindow(l:secondList, l:firstList)
-        let l:line = line('.')
-        echom 'Line number: ' . l:line
         nnoremap <silent> <buffer> <CR> :call <SID>OpenFile('iolddocs', 0, 0)<CR>
         nnoremap <silent> <buffer> D :call <SID>OpenFile('iolddocs!', 1, 0)<CR>
         nnoremap <silent><buffer> q :bwipeout!<CR>
@@ -267,6 +263,15 @@ if g:system ==# 'ios'
     endfunction
     "}}}
 endif
+function! s:BufferWipeout() abort  "{{{1
+    let l:file = getline('.')
+    let [l:filename, l:filepath, l:line] = split(l:file, ' || ')
+    let l:file = fnamemodify(l:filepath . l:filename, ':~')
+    execute 'bwipeout' l:file
+    setlocal modifiable
+    delete_
+    setlocal nomodifiable
+endfunction
 function! oldfilesearch#BufferList() abort  "{{{1
     " Creates list of current buffers in new window
     let l:myFilename = fnamemodify(expand('%'), ':t')
@@ -319,22 +324,23 @@ function! oldfilesearch#BufferList() abort  "{{{1
         silent call search('\C' . l:myFilename)
     endif
     execute 'nnoremap <silent><buffer> <CR> :call <SID>OpenFile(''buffer'', '
-                \ . l:winNum . ', ' . l:tabNum . ')<CR>'
+                \ . l:winNum . ',' l:tabNum . ')<CR>'
     execute 'nnoremap <silent><buffer> s :call <SID>OpenFile(''sbuffer'', '
-                \ . l:winNum . ', ' . l:tabNum . ')<CR>'
+                \ . l:winNum . ',' l:tabNum . ')<CR>'
     execute 'nnoremap <silent><buffer> t :call <SID>OpenFile(''tabedit <Bar>'
-                \ . 'buffer'', ' . l:winNum . ', ' . l:tabNum . ')<CR>'
+                \ . 'buffer'',' l:winNum . ',' l:tabNum . ')<CR>'
     execute 'nnoremap <silent><buffer> v :call <SID>OpenFile(''belowright vsplit'
-                \ . '<Bar> buffer'', ' . l:winNum . ', ' . l:tabNum . ')<CR>'
+                \ . '<Bar> buffer'',' l:winNum . ',' l:tabNum . ')<CR>'
     nnoremap <silent><buffer> a :quit \| ball<CR>
-    execute 'nnoremap <silent><buffer> q :bwipeout! <Bar> ' . l:tabNum
-                \ . 'tabnext <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> <Esc> :bwipeout! <Bar> ' . l:tabNum
-                \ . 'tabnext <Bar> ' . l:winNum . 'wincmd w<CR>'
-    execute 'nnoremap <silent><buffer> e :bwipeout! <Bar> ' . l:tabNum . 'tabnext <Bar> '
+    execute 'nnoremap <silent><buffer> q :bwipeout! <Bar>' l:tabNum
+                \ . 'tabnext <Bar>' l:winNum . 'wincmd w<CR>'
+    execute 'nnoremap <silent><buffer> <Esc> :bwipeout! <Bar>' l:tabNum
+                \ . 'tabnext <Bar>' l:winNum . 'wincmd w<CR>'
+    execute 'nnoremap <silent><buffer> e :bwipeout! <Bar>' l:tabNum . 'tabnext <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>'
-    execute 'nnoremap <silent><buffer> i :bwipeout! <Bar> ' . l:tabNum . 'tabnext <Bar> '
+    execute 'nnoremap <silent><buffer> i :bwipeout! <Bar>' l:tabNum . 'tabnext <Bar> '
                 \ . l:winNum . 'wincmd w <Bar> enew<CR>i'
+    nnoremap <silent><buffer> D :call <SID>BufferWipeout()<CR>
     nnoremap <buffer> / :call <SID>FilterFileList()<CR>
     nnoremap <buffer> u :call <SID>UndoFileListChange()<CR>
     nnoremap <buffer> <C-R> :call <SID>RedoFileListChange()<CR>
@@ -353,7 +359,7 @@ function! oldfilesearch#ExploreAtFilename() abort  " {{{1
     endif
     let l:myFilename = fnamemodify(expand('%'), ':t')
     let l:myPath = fnamemodify(expand('%'), ':p:h')
-    execute 'silent edit ' . fnameescape(l:myPath) . '/'
+    execute 'silent edit' fnameescape(l:myPath) . '/'
     execute l:winID . 'wincmd w'
     if l:myFilename !=# ''
         silent call search('\C' . l:myFilename)
