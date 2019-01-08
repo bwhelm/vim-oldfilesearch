@@ -77,7 +77,7 @@ function! s:OpenFile(command, winNum, tabNum) abort  "{{{1
         execute a:tabNum . 'tab'
         execute a:winNum . 'wincmd w'
         echohl Error
-        echo "No file selected! Hit 'q' to quit or 'u' to undo last search."
+        redraw | echo "No file selected! Hit 'q' to quit or 'u' to undo last search."
         echohl None
         return
     endtry
@@ -95,8 +95,7 @@ function! s:FilterFileList() abort  "{{{1
     " Make a change to start the undoable change
     execute "normal! i \<BS>"
     while 1
-        redraw
-        echo 'search>' . l:queryText
+        redraw | echo 'search>' . l:queryText
         let l:char = getchar()
         if l:char == 27         " <ESC>
             undojoin | call setline(1, l:text)
@@ -316,7 +315,7 @@ function! oldfilesearch#BufferList() abort  "{{{1
         call <SID>CreateWindow(l:hiddenLineList, l:bufferLineList)
     else
         echohl Error
-        echo 'No other buffers!'
+        redraw | echo 'No other buffers!'
         echohl None
         return
     endif
@@ -353,7 +352,7 @@ function! oldfilesearch#ExploreAtFilename() abort  " {{{1
     let l:winID = winnr()
     if getbufvar('%', '&mod')
         echohl WarningMsg
-        echo 'Save buffer first!'
+        redraw | echo 'Save buffer first!'
         echohl None
         return
     endif
